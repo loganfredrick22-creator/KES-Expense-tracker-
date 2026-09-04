@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ledger — Expense Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="ledger">
+
+  <!-- SPINE: balance + category breakdown -->
+  <aside class="spine">
+    <div class="spine-top">
+      <span class="mark">§</span>
+      <h1 class="wordmark">Ledger</h1>
+    </div>
+
+    <div class="balance-block">
+      <span class="balance-label">Balance, this month</span>
+      <span class="balance-amount" id="balance-amount">KES 0.00</span>
+      <div class="balance-sub">
+        <span class="sub-item">
+          <span class="sub-dot credit"></span>
+          In <span id="total-credit">KES 0.00</span>
+        </span>
+        <span class="sub-item">
+          <span class="sub-dot debit"></span>
+          Out <span id="total-debit">KES 0.00</span>
+        </span>
+      </div>
+    </div>
+
+    <nav class="period-nav" id="period-nav" aria-label="Month selector">
+      <button class="period-btn is-active" data-period="2026-09">Sep 2026</button>
+      <button class="period-btn" data-period="2026-08">Aug 2026</button>
+      <button class="period-btn" data-period="2026-07">Jul 2026</button>
+      <button class="period-btn" data-period="all">All entries</button>
+    </nav>
+
+    <div class="category-block">
+      <span class="category-heading">By category</span>
+      <ul class="category-list" id="category-list">
+        <!-- JS: render <li class="category-row"> items here from transaction data -->
+        <li class="category-row" data-category="placeholder">
+          <span class="category-name">No entries yet</span>
+          <span class="category-bar"><span class="category-fill" style="width:0%"></span></span>
+          <span class="category-amount">KES 0.00</span>
+        </li>
+      </ul>
+    </div>
+  </aside>
+
+  <!-- PAGE: entry form + transaction table -->
+  <main class="page">
+
+    <header class="page-head">
+      <h2>September 2026</h2>
+      <p class="page-sub">Every shilling in, every shilling out.</p>
+    </header>
+
+    <form class="entry-form" id="entry-form">
+      <div class="field">
+        <label for="entry-date">Date</label>
+        <input type="date" id="entry-date" name="date" required>
+      </div>
+      <div class="field field-grow">
+        <label for="entry-desc">Description</label>
+        <input type="text" id="entry-desc" name="description" placeholder="e.g. Naivas groceries" required>
+      </div>
+      <div class="field">
+        <label for="entry-category">Category</label>
+        <select id="entry-category" name="category" required>
+          <option value="" disabled selected>Choose one</option>
+          <option value="food">Food</option>
+          <option value="transport">Transport</option>
+          <option value="rent">Rent</option>
+          <option value="utilities">Utilities</option>
+          <option value="business">Business</option>
+          <option value="leisure">Leisure</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="entry-type">Type</label>
+        <select id="entry-type" name="type" required>
+          <option value="debit">Expense</option>
+          <option value="credit">Income</option>
+        </select>
+      </div>
+      <div class="field field-amount">
+        <label for="entry-amount">Amount (KES)</label>
+        <input type="number" id="entry-amount" name="amount" min="0" step="0.01" placeholder="0.00" required>
+      </div>
+      <button type="submit" class="add-btn" id="add-btn">Add entry</button>
+    </form>
+
+    <div class="table-wrap">
+      <table class="ledger-table" id="ledger-table">
+        <thead>
+          <tr>
+            <th class="col-no">No.</th>
+            <th class="col-date">Date</th>
+            <th class="col-desc">Description</th>
+            <th class="col-cat">Category</th>
+            <th class="col-debit">Debit</th>
+            <th class="col-credit">Credit</th>
+            <th class="col-balance">Balance</th>
+            <th class="col-action"><span class="sr-only">Remove</span></th>
+          </tr>
+        </thead>
+        <tbody id="ledger-body">
+          <!-- JS: append <tr> rows here for each transaction -->
+          <!-- Example row shape for reference:
+          <tr class="ledger-row" data-id="1">
+            <td class="col-no">1</td>
+            <td class="col-date">04 Sep</td>
+            <td class="col-desc">Naivas groceries</td>
+            <td class="col-cat"><span class="cat-tag" data-category="food">Food</span></td>
+            <td class="col-debit debit">2,450.00</td>
+            <td class="col-credit"></td>
+            <td class="col-balance">47,550.00</td>
+            <td class="col-action"><button class="remove-btn" aria-label="Remove entry">×</button></td>
+          </tr>
+          -->
+        </tbody>
+      </table>
+
+      <p class="empty-state" id="empty-state">
+        No entries yet — add your first transaction above.
+      </p>
+    </div>
+
+  </main>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

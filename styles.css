@@ -1,0 +1,401 @@
+/* ===================================================
+   Tokens
+=================================================== */
+:root {
+  --cover: #1B3A2B;
+  --cover-light: #24503A;
+  --cover-line: rgba(255, 255, 255, 0.12);
+
+  --paper: #F3EEDF;
+  --paper-line: #D9CFAE;
+  --paper-raised: #FBF8EE;
+
+  --ink: #262019;
+  --ink-soft: #6B6250;
+  --ink-faint: #9A9080;
+
+  --credit: #2F6E4B;
+  --debit: #A63D33;
+
+  --font-display: "Fraunces", serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  --radius-sm: 3px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--cover);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: 2px solid var(--credit);
+  outline-offset: 2px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
+
+/* ===================================================
+   Layout shell
+=================================================== */
+.ledger {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  min-height: 100vh;
+}
+
+@media (max-width: 860px) {
+  .ledger { grid-template-columns: 1fr; }
+}
+
+/* ===================================================
+   Spine (left, cover of the ledger book)
+=================================================== */
+.spine {
+  background: linear-gradient(180deg, var(--cover-light), var(--cover) 60%);
+  color: #EFEAE0;
+  padding: 36px 28px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 34px;
+  box-shadow: inset -14px 0 24px -20px rgba(0, 0, 0, 0.6);
+  position: relative;
+}
+
+.spine::after {
+  content: "";
+  position: absolute;
+  top: 0; bottom: 0; right: 0;
+  width: 3px;
+  background: repeating-linear-gradient(
+    180deg,
+    rgba(255,255,255,0.35) 0px,
+    rgba(255,255,255,0.35) 2px,
+    transparent 2px,
+    transparent 10px
+  );
+}
+
+.spine-top {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.mark {
+  font-family: var(--font-display);
+  font-size: 28px;
+  color: #B7CBB6;
+  line-height: 1;
+}
+
+.wordmark {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 26px;
+  letter-spacing: 0.01em;
+  margin: 0;
+  color: #F6F3E9;
+}
+
+/* Balance block */
+.balance-block {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-bottom: 26px;
+  border-bottom: 1px solid var(--cover-line);
+}
+
+.balance-label {
+  font-size: 12px;
+  color: #B9C4B3;
+  letter-spacing: 0.02em;
+}
+
+.balance-amount {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 40px;
+  line-height: 1.1;
+  color: #FBF8EE;
+  font-variant-numeric: tabular-nums;
+}
+
+.balance-sub {
+  display: flex;
+  gap: 18px;
+  margin-top: 8px;
+  font-size: 12.5px;
+}
+
+.sub-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #D8DED2;
+}
+
+.sub-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.sub-dot.credit { background: #6FBE8F; }
+.sub-dot.debit { background: #D98A7B; }
+
+/* Period nav */
+.period-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.period-btn {
+  all: unset;
+  cursor: pointer;
+  padding: 9px 10px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: #C7D0C1;
+  display: flex;
+  justify-content: space-between;
+}
+
+.period-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #F6F3E9;
+}
+
+.period-btn.is-active {
+  background: rgba(255, 255, 255, 0.12);
+  color: #F6F3E9;
+  font-weight: 600;
+}
+
+/* Category breakdown */
+.category-block {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 8px;
+  border-top: 1px solid var(--cover-line);
+}
+
+.category-heading {
+  font-size: 12px;
+  color: #B9C4B3;
+  letter-spacing: 0.02em;
+}
+
+.category-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.category-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 4px;
+  font-size: 12.5px;
+}
+
+.category-name {
+  color: #DCE3D6;
+}
+
+.category-bar {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.category-fill {
+  display: block;
+  height: 100%;
+  background: #8FCBA6;
+}
+
+.category-amount {
+  color: #A9B6A2;
+  font-size: 11.5px;
+}
+
+/* ===================================================
+   Page (right, paper leaf of the ledger)
+=================================================== */
+.page {
+  background: var(--paper);
+  padding: 40px 48px 60px;
+  background-image:
+    linear-gradient(var(--paper-line) 1px, transparent 1px);
+  background-size: 100% 40px;
+  background-position: 0 178px;
+  background-repeat: repeat-y;
+}
+
+@media (max-width: 860px) {
+  .page { padding: 32px 20px 48px; }
+}
+
+.page-head h2 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 30px;
+  margin: 0 0 4px;
+  color: var(--ink);
+}
+
+.page-sub {
+  margin: 0 0 28px;
+  color: var(--ink-soft);
+  font-size: 13.5px;
+}
+
+/* Entry form — styled like a new ledger line, not a card */
+.entry-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 14px;
+  padding: 18px 20px;
+  background: var(--paper-raised);
+  border: 1px solid var(--paper-line);
+  border-radius: var(--radius-sm);
+  margin-bottom: 30px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 110px;
+}
+
+.field-grow { flex: 1 1 200px; }
+.field-amount { min-width: 130px; }
+
+.field label {
+  font-size: 11px;
+  color: var(--ink-soft);
+  letter-spacing: 0.02em;
+}
+
+.field input,
+.field select {
+  font-family: var(--font-mono);
+  font-size: 13.5px;
+  color: var(--ink);
+  background: #fff;
+  border: 1px solid var(--paper-line);
+  border-radius: var(--radius-sm);
+  padding: 8px 9px;
+}
+
+.field input:focus,
+.field select:focus {
+  border-color: var(--credit);
+}
+
+.add-btn {
+  all: unset;
+  cursor: pointer;
+  background: var(--cover);
+  color: #F6F3E9;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 13px;
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+  text-align: center;
+}
+
+.add-btn:hover { background: var(--cover-light); }
+
+/* Table */
+.table-wrap { position: relative; }
+
+.ledger-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.ledger-table thead th {
+  text-align: left;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 11px;
+  color: var(--ink-soft);
+  letter-spacing: 0.03em;
+  padding: 0 10px 10px;
+  border-bottom: 2px solid var(--ink);
+}
+
+.ledger-table td {
+  padding: 10px 10px;
+  border-bottom: 1px solid var(--paper-line);
+  vertical-align: middle;
+  color: var(--ink);
+}
+
+.col-no { width: 40px; color: var(--ink-faint); font-size: 12px; }
+.col-date { width: 90px; white-space: nowrap; }
+.col-debit, .col-credit, .col-balance {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  white-space: nowrap;
+}
+.col-action { width: 32px; text-align: right; }
+
+.debit { color: var(--debit); }
+.credit { color: var(--credit); }
+
+.cat-tag {
+  display: inline-block;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(38, 32, 25, 0.06);
+  color: var(--ink-soft);
+}
+
+.remove-btn {
+  all: unset;
+  cursor: pointer;
+  color: var(--ink-faint);
+  font-size: 16px;
+  line-height: 1;
+  padding: 2px 6px;
+}
+
+.remove-btn:hover { color: var(--debit); }
+
+.empty-state {
+  text-align: center;
+  color: var(--ink-soft);
+  font-size: 13px;
+  padding: 40px 0 10px;
+  display: none; /* JS: toggle this on when ledger-body has no rows */
+}
