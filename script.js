@@ -163,20 +163,23 @@ function renderTable() {
 // TODO 3: COMPUTE + RENDER TOTALS
 // ============================================================
 
-function renderTotals(data) {
-  const creditBalance = 0;
-  const debitBalance = 0;
+function renderTotals() {
 
-  data.forEach(transaction => {
-    if(transaction.type === 'credit'){
-    creditBalance += transaction.amount;
+  let totalCredit = 0;
+  let totalDebit = 0;
+
+  transactions.forEach(transaction => {
+
+    if (transaction.type === 'credit') {
+      totalCredit += transaction.amount;
     }
 
-    if(transaction.type === 'debit'){
-      debitBalance += transaction.amount
+    if (transaction.type === 'debit') {
+      totalDebit += transaction.amount;
     }
   });
-  
+
+  const balance = totalCredit - totalDebit;
 
   balanceAmountEl.textContent = formatKES(balance);
   totalCreditEl.textContent = formatKES(totalCredit);
@@ -188,33 +191,33 @@ function renderTotals(data) {
 // TODO 4: RENDER CATEGORY BREAKDOWN
 // ============================================================
 
-function renderCategoryBreakdown(data) {
-  categoryList.innerHTML='';
+function renderCategoryBreakdown() {
 
-  const categoryTotals={};
+  categoryListEl.innerHTML = '';
 
-  data.forEach(transaction => {
-    if(transaction.type !=='debit'){
+  const categoryTotals = {};
+
+  transactions.forEach(transaction => {
+
+    // Only count expenses
+    if (transaction.type !== 'debit') {
       return;
     }
 
-    if(!categoryTotals[transaction.category]){
-   categoryTotals[transaction.category]= 0;
+    if (!categoryTotals[transaction.category]) {
+      categoryTotals[transaction.category] = 0;
+    }
 
-   }
-   categoryTotals[transaction.category] += transasction.amount;
+    categoryTotals[transaction.category] += transaction.amount;
   });
 
- const categories = Object.entries(categoryTotals);
+  const categories = Object.entries(categoryTotals);
 
   if (categories.length === 0) {
 
     categoryListEl.innerHTML = `
       <li class="category-row" data-category="placeholder">
-
-        <span class="category-name">
-          No entries yet
-        </span>
+        <span class="category-name">No entries yet</span>
 
         <span class="category-bar">
           <span class="category-fill" style="width:0%"></span>
@@ -223,23 +226,27 @@ function renderCategoryBreakdown(data) {
         <span class="category-amount">
           KES 0.00
         </span>
-
       </li>
     `;
 
+    return;
+  }
+
+  // Find largest category
   const largestCategory = Math.max(
-  ...categories.map(([category, total]) => total)
-);
- categories.forEach(([category, total]) => {
-  const categoryName = category.charAt(0).toUpperCase + category.slice(0);
+    ...categories.map(([category, total]) => total)
+  );
 
-  const percentage =
-  (total / largestCategory) * 100;
- });
+  categories.forEach(([category, total]) => {
 
+    const categoryName =
+      category.charAt(0).toUpperCase() +
+      category.slice(1);
 
+    const percentage =
+      (total / largestCategory) * 100;
 
-   categoryListEl.innerHTML += `
+    categoryListEl.innerHTML += `
       <li class="category-row" data-category="${category}">
 
         <span class="category-name">
@@ -259,7 +266,7 @@ function renderCategoryBreakdown(data) {
 
       </li>
     `;
-  }
+  });
 }
 
 
@@ -295,20 +302,21 @@ let selectedPeriod = '2026-09';
 
 periodNav.addEventListener('click', (event) => {
 
-  const button = event.target.classList('.remove-btn');
+  const button = event.target.closest('.period-btn');
 
-  if(!button){return};
- 
+  if (!button) {
+    return;
+  }
+
   selectedPeriod = button.dataset.period;
 
-  document.querySelectorAll().forEach(btn => {
-    btn.classList.remove('is-active');
+  document
+    .querySelectorAll('.period-btn')
+    .forEach(btn => {
+      btn.classList.remove('is-active');
+    });
 
-  });
   button.classList.add('is-active');
-
-
-
 
   renderFilteredData();
 });
